@@ -1,4 +1,4 @@
-const User = require("../Models/User");
+const User = require("../Model/UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -51,9 +51,13 @@ const loginUser = async (req, res) => {
       }
     );
     // refresh token
-    const refreshToken = jwt.sign({ id: user._id, author: user.username }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const refreshToken = jwt.sign(
+      { id: user._id, author: user.username },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
     // Save refresh token in user document
     user.refreshToken = refreshToken;
     // Respond with success message and user details
@@ -64,7 +68,7 @@ const loginUser = async (req, res) => {
         username: user.username,
         email: user.email,
       },
-      token: token,
+      accessToken: token,
       refreshToken: refreshToken,
     });
   } catch (error) {

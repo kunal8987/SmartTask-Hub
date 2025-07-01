@@ -1,4 +1,4 @@
-const Task = require("../Models/Task");
+const Task = require("../Model/TaskModel");
 
 const createTask = async (req, res) => {
   try {
@@ -36,21 +36,15 @@ const getTasks = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { title, description, status } = req.body;
 
-    if (!title || !status) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
     const task = await Task.find({ userId: req.user.id, _id: taskId });
     if (task.length === 0) {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    const updatedTask = await Task.findByIdAndUpdate(
-      taskId,
-      { title, description, status },
-      { new: true }
-    );
+    const updatedTask = await Task.findByIdAndUpdate(taskId, req.body, {
+      new: true,
+    });
 
     if (!updatedTask) {
       return res.status(404).json({ error: "Task not found" });
