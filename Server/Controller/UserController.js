@@ -59,7 +59,8 @@ const loginUser = async (req, res) => {
       }
     );
     // Save refresh token in user document
-    user.refreshToken = refreshToken;
+     user.refreshToken = refreshToken;
+     await user.save();
     // Respond with success message and user details
     res.status(200).json({
       message: "Login successful",

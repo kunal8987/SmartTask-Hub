@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "./Common";
+import { ACCESS_TOKEN } from "./Common";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -15,7 +15,7 @@ api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+      config.headers["Authorization"] = `${accessToken}`;
     }
     return config;
   },

@@ -8,38 +8,41 @@ import Loader from "./Loader";
 const ProtectedRoutes = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-  useEffect(() => {
-    auth();
-  }, []);
-
-  let tokenRefresh = () => {
-    const Token = localStorage.getItem(REFRESH_TOKEN);
-    if (!Token) return false;
-
-    api
-      .post("api/user/refresh/token", { refreshToken: Token })
-      .then((response) => {
-        const { accessToken } = response.data;
-        localStorage.setItem(ACCESS_TOKEN, accessToken);
-        setIsAuthenticated(true);
-      })
-      .catch((error) => {
-        console.error("Error refreshing token:", error);
-        setIsAuthenticated(false);
+  let tokenRefresh = async () => {
+    try {
+      let response = await api.post("api/user/refresh/token", {
+        refreshToken: localStorage.getItem(REFRESH_TOKEN),
       });
+      if (response.status === 200) {
+        localStorage.setItem(ACCESS_TOKEN, response.data.accessToken);
+        localStorage.setItem(REFRESH_TOKEN, response.data.refreshToken);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      setIsAuthenticated(false);
+    }
   };
 
-  const auth = async () => {
+  let checkAuthentication = () => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
-    if (!accessToken) return false;
+    if (!accessToken) {
+      setIsAuthenticated(false);
+      return;
+    }
 
     try {
-      const decoded = jwtDecode(accessToken);
-      sessionStorage.setItem(NAME, decoded.author);
+      const decodedToken = jwtDecode(accessToken);
+      sessionStorage.setItem(NAME, decodedToken.author);
       const currentTime = Date.now() / 1000; // Convert to seconds
-      if (decoded.exp > currentTime) {
-        await tokenRefresh();
+
+      if (decodedToken.exp < currentTime) {
+        // Token is expired, refresh it
+        tokenRefresh();
       } else {
+        // Token is valid
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -48,10 +51,15 @@ const ProtectedRoutes = ({ children }) => {
     }
   };
 
-  // if (isAuthenticated === null) {
-  //   return <Loader />; // or a loading spinner
-  // }
-  return isAuthenticated ? { children } : <Navigate to="/login" />;
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <Loader />;
+  }
+
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoutes;

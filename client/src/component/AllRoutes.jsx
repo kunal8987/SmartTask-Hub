@@ -4,6 +4,7 @@ import Task from "../pages/Task";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ProtectedRoutes from "../component/ProtectedRoutes";
+import CerateTask from "../pages/CerateTask";
 const AllRoutes = () => {
   return (
     
@@ -14,6 +15,14 @@ const AllRoutes = () => {
           element={
             <ProtectedRoutes>
               <Task />
+            </ProtectedRoutes>
+          }
+        />
+         <Route
+          path="/create-task"
+          element={
+            <ProtectedRoutes>
+              <CerateTask />
             </ProtectedRoutes>
           }
         />

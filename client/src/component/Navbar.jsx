@@ -6,6 +6,12 @@ const Navbar = () => {
 
   let token = sessionStorage.getItem(NAME);
 
+  let handleClick = () => {
+    sessionStorage.removeItem(NAME);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+  };
+
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,19 +19,8 @@ const Navbar = () => {
           <div className="flex-shrink-0 text-xl font-bold text-blue-900">
             SmartTask Hub
           </div>
-          {token ? (
+          {!token ? (
             <div className="hidden md:flex space-x-4">
-              <button className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium">
-                Logout{" "}
-              </button>{" "}
-            </div>
-          ) : (
-            <div className="hidden md:flex space-x-4">
-              <Link to={"/"}>
-                <button className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium">
-                  Task{" "}
-                </button>{" "}
-              </Link>
               <Link to={"/login"}>
                 <button className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium">
                   Login{" "}
@@ -36,6 +31,25 @@ const Navbar = () => {
                   Register{" "}
                 </button>{" "}
               </Link>
+            </div>
+          ) : (
+            <div className="hidden md:flex space-x-4">
+              <Link to={"/"}>
+                <button className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium">
+                  Task{" "}
+                </button>{" "}
+              </Link>
+              <Link to={"/create-task"}>
+                <button className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium">
+                  Create-task{" "}
+                </button>{" "}
+              </Link>
+              <button
+                onClick={handleClick}
+                className="px-4 py-2 rounded hover:bg-blue-50 text-blue-800 font-medium"
+              >
+                Logout{" "}
+              </button>{" "}
             </div>
           )}
           <div className="md:hidden">
